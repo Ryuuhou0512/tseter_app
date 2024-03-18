@@ -1,0 +1,36 @@
+<html>
+    <head>
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.css') }}">
+    </head>
+    <body>
+        <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+
+        
+        <div class="row" style="height: 800px; width: 600px;">
+            <div class="col">
+            <div class="row">
+                <a href="{{ url_for('user_bp.CRUD_view') }}" class="btn btn-primary">返回至列表</a>
+            </div>
+            <h2>新增人員</h2>
+                <form action="/add_user" method="POST">
+                    <div class="input-group mb-3">
+                        <span class="input-group-text" id="basic-addon1">新增姓名</span>
+                        <input type="text" class="form-control" name="username" placeholder="姓名" aria-label="Username" aria-describedby="basic-addon1">
+                    </div>
+                    <div class="input-group mb-3">
+                        <span class="input-group-text" id="basic-addon1">新增密碼</span>
+                        <input type="password" class="form-control" name="password" placeholder="密碼" aria-label="Password" aria-describedby="basic-addon1">
+                    </div>
+                    <div class="input-group mb-3">
+                        <span class="input-group-text" id="basic-addon1">序號</span>
+                        <input type="number" class="form-control" name="serial_number" placeholder="序號" aria-label="serial_number" aria-describedby="basic-addon1" value = {{data.max_serial_number}} readonly>
+                    </div>
+                    
+                    <h2>{{data.text}}</h2>
+                    <button type="submit" class="btn btn-primary">確定新增</button>
+                    
+                </form>
+            </div>
+        </div>        
+    </body>
+</html>

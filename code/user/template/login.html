@@ -1,0 +1,33 @@
+<html>
+    <head>
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.css') }}">
+    </head>
+    <body>
+        <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+
+        
+        <div class="row" style="height: 800px; width: 600px;">
+            <div class="col">
+            <h2>登入頁面</h2>
+                <form action="/login" method="POST">
+                    <div class="input-group mb-3">
+                        <span class="input-group-text" id="basic-addon1">帳號</span>
+                        <input type="text" class="form-control" name="username" placeholder="帳號" aria-label="Username" aria-describedby="basic-addon1">
+                    </div>
+                    <div class="input-group mb-3">
+                        <span class="input-group-text" id="basic-addon1">密碼</span>
+                        <input type="password" class="form-control" name="password" placeholder="密碼" aria-label="Password" aria-describedby="basic-addon1">
+                    </div>
+
+                    {% if error %}
+                    <div>
+                        <h2 style="color:red;">{{error}}</h2>
+                    </div>
+                    {% endif %}
+
+                    <button type="submit" class="btn btn-primary">登入</button>
+                </form>
+            </div>
+        </div>        
+    </body>
+</html>

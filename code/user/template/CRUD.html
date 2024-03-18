@@ -1,0 +1,215 @@
+<html>
+    <head>
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.css') }}">
+    </head>
+    <body>
+        <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+            
+        <div style="height: 800px; width: 600px;">
+            <div class="row">
+                <div class="col">
+                <h2>新增刪除修改頁面</h2>
+                </div>
+            </div>        
+            <div class="row">
+                <div class="col">
+                    <div class="row">
+                        <a href="{{ url_for('user_bp.add_view') }}" class="btn btn-primary">新增</a>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="row" id="delete_btn_div">
+                        <a href="#a" class="btn btn-danger" onclick="delete_mode()">刪除</a>
+                    </div>
+                    <div class="row" id="save_delete_btn_div" style="display:none;">
+                        <a href="#a" class="btn btn-warning" onclick="delete_mode_save()">儲存狀態</a>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="row" id = "edit_password_btn_div">
+                        <a href="#a" class="btn btn-info" onclick="edit_password_mode()">修改</a>
+                    </div>
+                    <div class="row" id = "save_edit_password_btn_div" style="display: none;">
+                        <a href="#a" class="btn btn-warning" onclick="edit_password_mode_save()">儲存密碼</a>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col">
+                    <h3>表格</h3>
+
+                    <form action="/select_user">
+                        <div class="input-group mb-3">
+                            <span class="input-group-text" id="basic-addon1"><button type="submit" class="btn-primary">點擊查詢</button></span>
+                            <input type="text" class="form-control" name="keyword" placeholder="關鍵字(如果沒有輸入則為全部撈取)" aria-label="Username" aria-describedby="basic-addon1">
+                        </div>
+                    </form>
+                    <div style="max-height: 500px; overflow-y: auto;">
+                        <label style="font-size: 20px;">隱藏刪除：</label><input type="checkbox" id="hide_delete" onclick="hide_delete()">
+                        <table class="table" >
+                            <tr>
+                                <th>F1</th>
+                                <th>F2</th>
+                                <th>F3</th>
+                                <th>F4</th>
+                            </tr>
+                            {% for row in data %}
+                            <tr>
+                                <td style="vertical-align: middle;">{{row.name}}</td>
+                                <td style="vertical-align: middle;" class="password_td">{{row.password}}</td>
+                                <td style="vertical-align: middle;">{{row.serial_number}}</td>
+                                <td>
+                                    <select class="form-select corfim_select" value="{{row.is_deleted}}" disabled="true" onchange="delete_on_change(this)">
+                                        <option value="1" {% if row.is_deleted == 1 %} selected {% endif %}>顯示</option>
+                                        <option value="2" {% if row.is_deleted == 2 %} selected {% endif %}>隱藏</option>
+                                    </select>
+
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div>
+                <h3 style="color: #ffffff; background-color: #38b5aa;">許名毅</h3>
+            </div>
+
+        </div>
+    </body>
+
+    <script>
+
+var password_edit_list = []
+var delete_edit_list = []
+
+        function edit_password_mode(){
+            document.getElementById("edit_password_btn_div").style.display = "none"
+            document.getElementById("save_edit_password_btn_div").style.display = "block"
+            var password_td = document.getElementsByClassName('password_td')
+            
+            for(var i = 0; i < password_td.length ; i++){
+
+                password_td_index = password_td[i].textContent
+                password_td[i].innerHTML = '<input class="form-control password_input" value = '+password_td_index+' onchange="password_on_change(this)">'
+            }
+
+        }
+
+        function edit_password_mode_save(){
+
+            document.getElementById("edit_password_btn_div").style.display = "block"
+            document.getElementById("save_edit_password_btn_div").style.display = "none"
+
+            var password_td = document.getElementsByClassName('password_td')
+
+            for(var i = 0; i < password_td.length ; i++){
+
+                var password_input = password_td[i].getElementsByClassName('password_input')
+                var password_value = password_input[0].value
+
+                password_td[i].innerHTML = password_value
+
+            }
+            
+            var xhr = new XMLHttpRequest();
+            var url = "{{url_for('user_bp.edit_user')}}"
+            xhr.open("POST",url);
+            xhr.setRequestHeader("Content-Type", "application/json");
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === 4 && xhr.status === 200) {
+                    alert('修改成功')
+                }
+            };
+
+            xhr.send(JSON.stringify(password_edit_list));
+
+            password_edit_list = []
+        }
+
+        function password_on_change(element){
+            var tr = element.parentNode.parentNode
+            var td0 = tr.querySelector('td')
+            var name = td0.textContent
+            var value = element.value
+
+            password_edit_list.push({'name':name,'value':value})
+        }
+
+        function delete_mode(){
+
+            document.getElementById("delete_btn_div").style.display = "none"
+            document.getElementById('save_delete_btn_div').style.display = "block"
+            var corfim_select = document.getElementsByClassName("corfim_select")
+
+            for(var i = 0 ; i < corfim_select.length ; i++){
+                corfim_select[i].disabled = ""
+
+            }
+
+        }
+
+        function delete_mode_save(){
+            document.getElementById('delete_btn_div').style.display = "block"
+            document.getElementById('save_delete_btn_div').style.display = "none"
+            var corfim_select = document.getElementsByClassName("corfim_select")
+
+            for(var i = 0 ; i < corfim_select.length ; i++){
+                corfim_select[i].disabled = "true"
+            }
+
+            var xhr = new XMLHttpRequest();
+            var url = "{{url_for('user_bp.delete_user')}}"
+            xhr.open("POST",url);
+            xhr.setRequestHeader("Content-Type", "application/json");
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === 4 && xhr.status === 200) {
+                    alert('修改成功')
+                }
+            };
+
+            xhr.send(JSON.stringify(delete_edit_list));
+
+            delete_edit_list = []
+
+        }
+
+        function delete_on_change(element){
+            var tr = element.parentNode.parentNode
+            var td0 = tr.querySelector('td')
+            var name = td0.textContent
+            var value = element.value
+            
+            delete_edit_list.push({'name':name,'value':value})
+        }
+    
+
+        function hide_delete(){
+            var hide_delete = document.getElementById('hide_delete')
+            var corfim_select_list = document.getElementsByClassName('corfim_select')
+
+            console.log(hide_delete.checked)
+            if(hide_delete.checked){
+                for(var i = 0 ; i< corfim_select_list.length ; i ++){
+                    corfim_select = corfim_select_list[i]
+                    corfim_select_value = corfim_select.value 
+
+                    if(corfim_select_value == 2){
+                        var tr = corfim_select.parentNode.parentNode
+
+                        tr.style.display = "none"
+                    }
+                }
+            }else{
+                for(var i = 0 ; i< corfim_select_list.length ; i ++){
+                    corfim_select = corfim_select_list[i]
+                    console.log(corfim_select)
+
+                    var tr = corfim_select.parentNode.parentNode
+                    tr.style.display = ""
+
+                }
+            }
+        }
+    </script>
+</html>
